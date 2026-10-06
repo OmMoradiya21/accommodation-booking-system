@@ -1,0 +1,28 @@
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { IS_PUBLIC_KEY } from '../decorator/skipAuth.decorator.js';
+import { Roles } from '../decorator/roles.decorator.js';
+
+
+@Injectable()
+export class RolesGuard implements CanActivate {
+  constructor(private reflector: Reflector) {}
+
+  canActivate(context: ExecutionContext): boolean {
+    //skip auth
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic) {
+      return true;
+    }
+    const roles = this.reflector.get(Roles, context.getHandler());
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
+    if (!roles) {
+      return false;
+    }
+    return user.role === roles[0];
+  }
+}
