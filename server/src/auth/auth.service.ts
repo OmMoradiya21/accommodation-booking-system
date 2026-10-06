@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-// import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -18,10 +17,7 @@ export class AuthService {
   constructor(
     @InjectRepository(Auth_UserSession)
     private readonly authUserRepository: Repository<Auth_UserSession>,
-  
-    // TODO: Make User Look-up and remove user Service // done
-    // private readonly userService: UserService,
-    @Inject(USER_LOOKUP) private readonly users: UsersLookup,
+    @Inject(USER_LOOKUP) private readonly usersLookup: UsersLookup,
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
@@ -59,7 +55,7 @@ export class AuthService {
   }
 
   async verifyUser(email: string, pass: string) {
-    const user = await this.users.findByEmail(email);
+    const user = await this.usersLookup.findByEmail(email);
 
     if (!user) {
       throw new UnauthorizedException('Invalid email or password');
@@ -74,7 +70,7 @@ export class AuthService {
       sub: user.id,
       name: user.name,
       email: user.email,
-      role:user.role
+      role:user.role?.name
     };
 
     return payload;

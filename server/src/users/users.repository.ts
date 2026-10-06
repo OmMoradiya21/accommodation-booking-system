@@ -8,5 +8,17 @@ export class UserRepository extends Repository<User> {
   constructor(private readonly dataSource: DataSource) {
     super(User, dataSource.createEntityManager());
   }
-
+  async findByEmail(email: string) {
+    return this.findOne({
+      where: { email },
+      relations: { role: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password:true,
+        role: { id: true, name: true },
+      },
+    });
   }
+}
