@@ -8,12 +8,12 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { AuthService } from './auth.service.js';
-import { LocalAuthGuard } from './guards/local-auth.guard.js';
-import { CurrentUser } from './decorator/current-user.decorator.js';
-import { CreatePayloadDto } from './dto/create.payload.dto.js';
-import { SkipAuth } from './decorator/skipAuth.decorator.js';
-import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard.js';
+import { AuthService } from './auth.service.ts';
+import { LocalAuthGuard } from './guards/local-auth.guard.ts';
+import { CurrentUser } from './decorator/current-user.decorator.ts';
+import { CreatePayloadDto } from './dto/create.payload.dto.ts';
+import { SkipAuth } from './decorator/skipAuth.decorator.ts';
+import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard.ts';
 
 @SkipAuth()
 @Controller('auth')

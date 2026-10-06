@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { IS_PUBLIC_KEY } from '../decorator/skipAuth.decorator.js';
-import { Roles } from '../decorator/roles.decorator.js';
+import { IS_PUBLIC_KEY } from '../decorator/skipAuth.decorator.ts';
+import { Roles } from '../decorator/roles.decorator.ts';
 
 
 @Injectable()
@@ -23,6 +23,6 @@ export class RolesGuard implements CanActivate {
     if (!roles) {
       return false;
     }
-    return user.role === roles[0];
+    return roles.includes(user.role);
   }
 }

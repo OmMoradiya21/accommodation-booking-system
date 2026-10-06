@@ -9,9 +9,9 @@ import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { Auth_UserSession } from './entities/auth.entity.js';
-import { CreatePayloadDto } from './dto/create.payload.dto.js';
-import { USER_LOOKUP, type UsersLookup } from '../users/users-lookup.js';
+import { Auth_UserSession } from './entities/auth.entity.ts';
+import { CreatePayloadDto } from './dto/create.payload.dto.ts';
+import { USER_LOOKUP, type UsersLookup } from '../users/users-lookup.ts';
 
 @Injectable()
 export class AuthService {

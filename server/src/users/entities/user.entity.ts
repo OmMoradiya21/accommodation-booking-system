@@ -9,7 +9,7 @@ import {
   BeforeInsert,
   BeforeUpdate,
 } from 'typeorm';
-import { Role } from '../../roles/entities/roles.entity.js';
+import { Role } from '../../roles/entities/roles.entity.ts';
 import * as bcrypt from 'bcrypt';
 
 @Entity('users')

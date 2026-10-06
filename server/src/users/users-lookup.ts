@@ -1,4 +1,4 @@
-import { User } from "./entities/user.entity.js";
+import { User } from "./entities/user.entity.ts";
 
 export const USER_LOOKUP = Symbol('USER_LOOKUP');
 export interface UsersLookup {
