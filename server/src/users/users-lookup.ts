@@ -6,4 +6,6 @@ export interface UsersLookup {
   findByEmail(email: string): Promise<User | null>;
 
   create(createUserDto: CreateUserDto): Promise<User>;
+
+  findByIdWithRelations(id: string): Promise<User | null>;
 }

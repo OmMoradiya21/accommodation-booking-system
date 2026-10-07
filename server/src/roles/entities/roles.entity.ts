@@ -5,6 +5,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  type Relation,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity.ts';
 
@@ -20,11 +21,14 @@ export class Role {
   updatedAt: Date;
 
   @OneToMany(() => User, (user) => user.role)
-  users: User[];
+  users: Relation<User>[];
 
   @Column()
   name: string;
 
   @Column()
   description: string;
+
+  @Column('simple-array', { nullable: true, default: '' })
+  permissions: string[];
 }

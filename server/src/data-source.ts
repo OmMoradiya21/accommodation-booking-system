@@ -1,35 +1,25 @@
-import { NestFactory } from '@nestjs/core';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { Module } from '@nestjs/common';
 
-@Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true })],
-})
-class DataSourceConfigModule {}
+if (process.loadEnvFile) {
+  try {
+    process.loadEnvFile('.env');
+  } catch {
+    // ignore if .env file is missing or in test environment
+  }
+}
 
-export async function getDataSourceOptions(): Promise<DataSourceOptions> {
-  const app = await NestFactory.createApplicationContext(
-    DataSourceConfigModule,
-  );
-  const configService = app.get(ConfigService);
-
-  const options: DataSourceOptions = {
+export function getDataSourceOptions(): DataSourceOptions {
+  return {
     type: 'postgres',
-    host: configService.get<string>('DB_HOST', 'localhost'),
-    port: parseInt(configService.get<string>('DB_PORT', '5432'), 10),
-    username: configService.get<string>('DB_USERNAME', 'postgres'),
-    password: configService.get<string>('DB_PASSWORD', 'password'),
-    database: configService.get<string>('DB_NAME', 'my_database'),
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || '5432', 10),
+    username: process.env.DB_USERNAME || 'postgres',
+    password: process.env.DB_PASSWORD || 'password',
+    database: process.env.DB_NAME || 'accommodation_booking_system',
     entities: [import.meta.dirname + '/**/*.entity.ts'],
     migrations: [import.meta.dirname + '/migrations/**/*.ts'],
     synchronize: true,
   };
-
-  await app.close();
-  return options;
 }
 
-export const AppDataSource = getDataSourceOptions().then(
-  (options) => new DataSource(options),
-);
+export default new DataSource(getDataSourceOptions());

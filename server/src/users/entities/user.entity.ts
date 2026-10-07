@@ -5,11 +5,16 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  ManyToMany,
+  JoinTable,
   JoinColumn,
   BeforeInsert,
   BeforeUpdate,
+  type Relation,
 } from 'typeorm';
 import { Role } from '../../roles/entities/roles.entity.ts';
+import { Company } from '../../companies/entities/companies.entity.ts';
+import { Permission } from '../../permissions/entities/permission.entity.ts';
 import * as bcrypt from 'bcrypt';
 
 @Entity('users')
@@ -31,7 +36,18 @@ export class User {
 
   @ManyToOne(() => Role, (role) => role.users)
   @JoinColumn({ name: 'role_id' })
-  role: Role;
+  role: Relation<Role>;
+
+  @ManyToMany(() => Permission, (permission) => permission.users)
+  @JoinTable({
+    name: 'user_permissions',
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'permission_id', referencedColumnName: 'id' },
+  })
+  permissions: Relation<Permission>[];
+
+  @ManyToMany(() => Company, (company) => company.users)
+  companies: Relation<Company>[];
 
   @Column({ type: 'varchar', length: 50 })
   name: string;

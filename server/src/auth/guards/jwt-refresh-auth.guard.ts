@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   CanActivate,
   ExecutionContext,
   HttpException,
@@ -22,11 +21,6 @@ export class JwtRefreshAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
-    const userId = request.params.userId;
-    if (!userId || userId === 'undefined') {
-      throw new UnauthorizedException('Valid user ID required');
-    }
-
     const token = this.extractTokenFromHeader(request);
     if (!token) {
       throw new UnauthorizedException('Token required');
@@ -40,8 +34,13 @@ export class JwtRefreshAuthGuard implements CanActivate {
         ignoreExpiration: true,
       });
 
-      if (payload.sub !== userId) {
-        throw new UnauthorizedException('Token user Mismatch');
+      const userId =
+        request.params.userId && request.params.userId !== 'undefined'
+          ? request.params.userId
+          : payload.sub;
+
+      if (!userId) {
+        throw new UnauthorizedException('Valid user ID required');
       }
 
       const data = await this.authService.verifyRefreshToken(userId);
@@ -51,10 +50,7 @@ export class JwtRefreshAuthGuard implements CanActivate {
       request['user'] = data.payload;
     } catch (error: unknown) {
       if (error instanceof HttpException) {
-        const status = error.getStatus();
-        const response = error.getResponse();
-        console.log(`Status: ${status}`, response);
-        throw new BadRequestException('something is bad..response: ', response);
+        throw error;
       } else if (error instanceof Error) {
         throw new UnauthorizedException(error.message);
       } else {

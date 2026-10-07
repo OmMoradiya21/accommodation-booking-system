@@ -1,10 +1,8 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
 
-import { Auth_UserSession } from './entities/auth.entity.ts';
+import { AuthRepository } from './auth.repository.ts';
 import { CreatePayloadDto } from './dto/create.payload.dto.ts';
 import { USERS_LOOKUP, type UsersLookup } from '../users/users-lookup.ts';
 import { CreateUserDto } from '../users/dto/create-user.dto.ts';
@@ -12,9 +10,7 @@ import { CreateUserDto } from '../users/dto/create-user.dto.ts';
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(Auth_UserSession)
-    // TODO : make saperate repository
-    private readonly authUserRepository: Repository<Auth_UserSession>,
+    private readonly authRepository: AuthRepository,
     @Inject(USERS_LOOKUP) private readonly usersLookup: UsersLookup,
     private jwtService: JwtService,
     private configService: ConfigService,
@@ -48,10 +44,77 @@ export class AuthService {
       accessTokenExpires: expiresAccessToken,
       refreshTokenExpires: expiresRefreshToken,
     };
-    await this.authUserRepository.upsert(authUser, ['userId']);
+    await this.authRepository.upsertSession(authUser);
+
+    const userProfile = await this.getUserProfile(payload.sub);
+
     return {
-      access_token: accessToken,
-      user: payload,
+      accessToken,
+      user: userProfile,
+    };
+  }
+
+  async getUserProfile(userId: string) {
+    const user = await this.usersLookup.findByIdWithRelations(userId);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const permissionSet = new Set<string>();
+
+    if (user.role?.permissions) {
+      for (const p of user.role.permissions) {
+        if (p && p.trim()) {
+          permissionSet.add(p.trim());
+        }
+      }
+    }
+
+    if (user.permissions) {
+      for (const p of user.permissions) {
+        if (p && p.name && p.name.trim()) {
+          permissionSet.add(p.name.trim());
+        }
+      }
+    }
+
+    const companies = (user.companies || []).map((company) => ({
+      id: company.id,
+      name: company.name,
+    }));
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      companies,
+      permissions: Array.from(permissionSet),
+    };
+  }
+
+  async getCurrentUser(userId: string, activeAccessToken?: string) {
+    const userProfile = await this.getUserProfile(userId);
+
+    let accessToken = activeAccessToken;
+    if (!accessToken) {
+      const session = await this.authRepository.findByUserId(userId);
+      accessToken = session?.accessToken;
+    }
+
+    if (!accessToken) {
+      const payload: CreatePayloadDto = {
+        sub: userProfile.id,
+        name: userProfile.name,
+        email: userProfile.email,
+        role: '',
+      };
+      const generated = await this.generateAccessToken(payload);
+      accessToken = generated.accessToken;
+    }
+
+    return {
+      accessToken,
+      user: userProfile,
     };
   }
 
@@ -106,9 +169,7 @@ export class AuthService {
   }
 
   async verifyRefreshToken(userId: string) {
-    const userAuthData = await this.authUserRepository.findOneBy({
-      userId: userId,
-    });
+    const userAuthData = await this.authRepository.findByUserId(userId);
     if (!userAuthData) {
       throw new UnauthorizedException(
         'User auth record not found, please login.',
@@ -148,16 +209,14 @@ export class AuthService {
       expiresIn: `${this.accessTokenExpirationMs}ms`,
     });
 
-    const authUser = await this.authUserRepository.findOneBy({
-      userId: payload.sub,
-    });
+    const authUser = await this.authRepository.findByUserId(payload.sub);
 
     if (authUser) {
       authUser.accessToken = accessToken;
       authUser.accessTokenExpires = new Date(
         Date.now() + this.accessTokenExpirationMs,
       );
-      await this.authUserRepository.save(authUser);
+      await this.authRepository.saveSession(authUser);
     }
 
     return { accessToken };

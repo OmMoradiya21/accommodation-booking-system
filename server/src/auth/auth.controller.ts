@@ -3,12 +3,10 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   UseGuards,
-  Inject,
+  Req,
 } from '@nestjs/common';
+import type { Request } from 'express';
 import { AuthService } from './auth.service.ts';
 import { LocalAuthGuard } from './guards/local-auth.guard.ts';
 import { CurrentUser } from './decorator/current-user.decorator.ts';
@@ -32,22 +30,27 @@ export class AuthController {
   @Post('login')
   @UseGuards(LocalAuthGuard)
   async login(@CurrentUser() currentUserPayload: CreatePayloadDto) {
-    console.log(currentUserPayload);
     return this.authService.login(currentUserPayload);
+  }
+
+  @UseGuards(JwtAccessAuthGuard)
+  @Get(['current-user', 'current-user/:userId'])
+  async getCurrentUser(
+    @CurrentUser() currentUserPayload: CreatePayloadDto,
+    @Req() req: Request,
+  ) {
+    const authHeader = req.headers.authorization;
+    const activeToken = authHeader?.startsWith('Bearer ')
+      ? authHeader.slice(7)
+      : authHeader;
+    return this.authService.getCurrentUser(currentUserPayload.sub, activeToken);
   }
 
   @SkipJwtAccessAuthGuard()
   @UseGuards(JwtRefreshAuthGuard)
-  @Get(':userId')
+  @Get('access-token/:userId')
   async getAccessToken(@CurrentUser() currentUserPayload: CreatePayloadDto) {
     const data = await this.authService.generateAccessToken(currentUserPayload);
-    return { isAuthenticated: true, access_token: data.accessToken };
-  }
-
-  @UseGuards(JwtAccessAuthGuard)
-  @Get('current-user/:userId')
-  async getCurrentUser(@CurrentUser() currentUserPayload: CreatePayloadDto) {
-    // TODO : sent permissions with this object.
-    return { ...currentUserPayload };
+    return { isAuthenticated: true, accessToken: data.accessToken, access_token: data.accessToken };
   }
 }
