@@ -11,10 +11,10 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const accessToken = localStorage.getItem("accessToken");
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
   },
@@ -38,25 +38,24 @@ api.interceptors.response.use(
         if (!userId) {
           throw new Error("No user found");
         }
-        const token = localStorage.getItem("token");
-        if (!token) {
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) {
           throw new Error("No token found");
         }
         const refreshResponse = await axios.get(`${BASE_URL}/auth/${userId}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         });
         const newToken = refreshResponse.data?.access_token;
         console.log("get new token by axios: ");
         if (newToken) {
-          localStorage.setItem("token", newToken);
+          localStorage.setItem("accessToken", newToken);
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
           return api(originalRequest);
         }
       } catch (refreshError) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        localStorage.removeItem("accessToken");
         window.location.href = "/";
         return Promise.reject(refreshError);
       }

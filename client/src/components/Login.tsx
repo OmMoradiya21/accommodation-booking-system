@@ -8,8 +8,8 @@ export const Login = () => {
   const handleLoginBtn = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     await loginUser(email, password);
-    // Todo Navigation to company selection page 
-  }
+    // Todo Navigation to company selection page
+  };
 
   return (
     <form onSubmit={handleLoginBtn}>
