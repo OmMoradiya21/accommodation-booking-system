@@ -23,7 +23,7 @@ export async function getDataSourceOptions(): Promise<DataSourceOptions> {
     database: configService.get<string>('DB_NAME', 'my_database'),
     entities: [import.meta.dirname + '/**/*.entity.ts'],
     migrations: [import.meta.dirname + '/migrations/**/*.ts'],
-    synchronize: false,
+    synchronize: true,
   };
 
   await app.close();

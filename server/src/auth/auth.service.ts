@@ -1,8 +1,4 @@
-import {
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
@@ -10,20 +6,25 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { Auth_UserSession } from './entities/auth.entity.ts';
 import { CreatePayloadDto } from './dto/create.payload.dto.ts';
-import { USER_LOOKUP, type UsersLookup } from '../users/users-lookup.ts';
+import { USERS_LOOKUP, type UsersLookup } from '../users/users-lookup.ts';
+import { CreateUserDto } from '../users/dto/create-user.dto.ts';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(Auth_UserSession)
+    // TODO : make saperate repository
     private readonly authUserRepository: Repository<Auth_UserSession>,
-    @Inject(USER_LOOKUP) private readonly usersLookup: UsersLookup,
+    @Inject(USERS_LOOKUP) private readonly usersLookup: UsersLookup,
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
 
-  async login(payload: CreatePayloadDto) {
+  async register(createUserDto: CreateUserDto) {
+    return this.usersLookup.create(createUserDto);
+  }
 
+  async login(payload: CreatePayloadDto) {
     const expirationMs = this.accessTokenExpirationMs;
     const refreshExpirationMs = this.refreshTokenExpirationMs;
 
@@ -70,7 +71,7 @@ export class AuthService {
       sub: user.id,
       name: user.name,
       email: user.email,
-      role:user.role?.name
+      role: user.role?.name,
     };
 
     return payload;
@@ -133,7 +134,7 @@ export class AuthService {
           sub: decoded.sub,
           name: decoded.name,
           email: decoded.email,
-          role:decoded.role
+          role: decoded.role,
         },
       };
     } catch {

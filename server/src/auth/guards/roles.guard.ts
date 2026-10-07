@@ -1,8 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { IS_PUBLIC_KEY } from '../decorator/skipAuth.decorator.ts';
+import { IS_PUBLIC_KEY } from '../decorator/skipJwtAccessAuthGuard.decorator.ts';
 import { Roles } from '../decorator/roles.decorator.ts';
-
 
 @Injectable()
 export class RolesGuard implements CanActivate {

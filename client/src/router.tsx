@@ -3,56 +3,40 @@ import { requireRole } from './auth/protectedLoader';
 import { ProtectedLayout } from './layouts/ProtectedLayout';
 
 import { ROLES } from './constants/role.constant';
+import { ErrorElement } from './components/ErrorElement';
+import { Login } from './components/Login';
+import { GlobalContextProvider } from './components/AuthProvider';
 
 export const router = createBrowserRouter([
-  // Public Routes
   {
-    path: '/login',
-  },
-  {
-    path: '/unauthorized',
-  },
-  {
-    element: <ProtectedLayout />,
-    loader: requireRole(),
-    id: 'root-protected',
+    Component: GlobalContextProvider,
+    ErrorBoundary: ErrorElement,
     children: [
-      // User, Manager, Admin
       {
-        element: <ProtectedLayout />,
-        loader: requireRole([ROLES.USER, ROLES.MANAGER, ROLES.ADMIN]),
-        children: [
-          {
-            path: '/dashboard',
-          },
-        ],
+        index: true,
+        Component: Login,
+        ErrorBoundary: ErrorElement,
       },
-
-      //  Manager and Admin
       {
-        element: <ProtectedLayout />,
-        loader: requireRole([ROLES.MANAGER, ROLES.ADMIN]),
+        path: "company",
+        Component: ProtectedLayout,
         children: [
           {
-            path: '/reports',
-          },
-        ],
-      },
-
-      // for admin
-      {
-        element: <ProtectedLayout />,
-        loader: requireRole([ROLES.ADMIN]),
-        children: [
-          {
-            path: '/admin/',
+            Component: AppLayout,
+            children: [
+              {
+                index: true,
+                Component: Dashboard,
+              },
+              {
+                path: "projects",
+                Component: Customer,
+              },
+              
+            ],
           },
         ],
       },
     ],
-  },
-  {
-    path: '*',
-    element: <Navigate to="/dashboard" replace />,
   },
 ]);

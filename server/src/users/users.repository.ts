@@ -1,23 +1,73 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { User } from './entities/user.entity.ts';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateUserDto } from './dto/create-user.dto.ts';
+import { UpdateUserDto } from './dto/update-user.dto.ts';
 
 @Injectable()
-export class UserRepository extends Repository<User> {
-  constructor(private readonly dataSource: DataSource) {
-    super(User, dataSource.createEntityManager());
+export class UserRepository {
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
+  async findAll() {
+    const users = await this.userRepository.find({
+      relations: { role: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: { id: true, name: true },
+        createdAt: true,
+      },
+    });
+    return users;
+  }
+
+  async findOne(id: string) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: { role: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: { id: true, name: true },
+        createdAt: true,
+      },
+    });
+    return user;
   }
   async findByEmail(email: string) {
-    return this.findOne({
+    const user = await this.userRepository.findOne({
       where: { email },
       relations: { role: true },
       select: {
         id: true,
         name: true,
         email: true,
-        password:true,
+        password: true,
         role: { id: true, name: true },
       },
     });
+    return user;
+  }
+  async saveUser(createUserDto: CreateUserDto) {
+    const savedUser = await this.userRepository.save(createUserDto);
+    return savedUser;
+  }
+
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const updatedUser = await this.userRepository.preload({
+      id,
+      ...updateUserDto,
+    });
+    return updatedUser;
+  }
+
+  async remove(user: User) {
+     await this.userRepository.remove(user);
+
   }
 }
