@@ -4,6 +4,7 @@ import { ErrorElement } from "./components/ErrorElement";
 import { Login } from "./components/Login";
 import { CompanySelect } from "./components/CompanySelect";
 import { Dashboard } from "./components/Dashboard";
+import { CreateCustomer } from "./components/CreateCustomer";
 
 export const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ export const router = createBrowserRouter([
       {
         path: "dashboard",
         Component: Dashboard,
+      },
+      {
+        path: "customers",
+        Component: CreateCustomer,
       },
       {
         path: "*",
