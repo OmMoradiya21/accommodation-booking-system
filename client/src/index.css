@@ -1,3 +1,7 @@
+@import 'primeicons/primeicons.css';
+@import '/node_modules/primeflex/primeflex.css';
+
+
 * {
   box-sizing: border-box;
   margin: 0;

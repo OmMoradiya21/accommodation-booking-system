@@ -9,13 +9,15 @@ export const Dashboard = () => {
     useGlobalContext();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState<"overview" | "users" | "companies">("overview");
+  const [activeTab, setActiveTab] = useState<
+    "overview" | "users" | "companies"
+  >("users");
 
   const isAdmin = Boolean(
     user?.role?.toLowerCase() === "admin" ||
-      user?.permissions?.includes("can_manage_users") ||
-      user?.permissions?.includes("can_create_company") ||
-      user?.email?.toLowerCase().includes("admin"),
+    user?.permissions?.includes("can_manage_users") ||
+    user?.permissions?.includes("can_create_company") ||
+    user?.email?.toLowerCase().includes("admin"),
   );
 
   useEffect(() => {
@@ -31,7 +33,7 @@ export const Dashboard = () => {
   if (isLoading || !user || !selectedCompany) {
     return null;
   }
-
+  //style={{ minHeight: "100vh", backgroundColor: "#fafafa" } }
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#fafafa" }}>
       <header className="navbar">
@@ -41,7 +43,9 @@ export const Dashboard = () => {
           </span>
           <span style={{ color: "#d4d4d8" }}>|</span>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <span style={{ fontSize: "0.85rem", color: "#71717a" }}>Company:</span>
+            <span style={{ fontSize: "0.85rem", color: "#71717a" }}>
+              Company:
+            </span>
             <span style={{ fontWeight: "600", fontSize: "0.85rem" }}>
               {selectedCompany.name}
             </span>
@@ -55,13 +59,9 @@ export const Dashboard = () => {
             </button>
           </div>
         </div>
-
+      
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          {isAdmin && (
-            <span className="badge dark">
-              ADMIN
-            </span>
-          )}
+          {isAdmin && <span className="badge dark">ADMIN</span>}
           <span style={{ fontSize: "0.85rem", color: "#71717a" }}>
             {user.name} ({user.email})
           </span>
@@ -77,20 +77,37 @@ export const Dashboard = () => {
           </button>
         </div>
       </header>
-
-      <main style={{ maxWidth: "1000px", margin: "2rem auto", padding: "0 1.5rem" }}>
+      <main
+        style={{ maxWidth: "1000px", margin: "2rem auto", padding: "0 1.5rem" }}
+      >
         <div style={{ marginBottom: "1.5rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              marginBottom: "0.5rem",
+            }}
+          >
             <div>
-              <h1 style={{ fontSize: "1.35rem", fontWeight: "600", marginBottom: "0.25rem" }}>
+              <h1
+                style={{
+                  fontSize: "1.35rem",
+                  fontWeight: "600",
+                  marginBottom: "0.25rem",
+                }}
+              >
                 {activeTab === "overview"
                   ? selectedCompany.name
                   : activeTab === "users"
-                  ? "User Management"
-                  : "Company Management"}
+                    ? "User Management"
+                    : "Company Management"}
               </h1>
               <p style={{ color: "#71717a", fontSize: "0.85rem" }}>
-                Workspace ID: <span style={{ fontFamily: "monospace" }}>{selectedCompany.id}</span>
+                Workspace ID:{" "}
+                <span style={{ fontFamily: "monospace" }}>
+                  {selectedCompany.id}
+                </span>
               </p>
             </div>
           </div>
@@ -109,7 +126,8 @@ export const Dashboard = () => {
                 type="button"
                 className="btn-outline"
                 style={{
-                  backgroundColor: activeTab === "overview" ? "#18181b" : "#ffffff",
+                  backgroundColor:
+                    activeTab === "overview" ? "#18181b" : "#ffffff",
                   color: activeTab === "overview" ? "#ffffff" : "#18181b",
                   border: `1px solid ${activeTab === "overview" ? "#18181b" : "#e4e4e7"}`,
                 }}
@@ -122,7 +140,8 @@ export const Dashboard = () => {
                 id="admin-users-tab-btn"
                 className="btn-outline"
                 style={{
-                  backgroundColor: activeTab === "users" ? "#18181b" : "#ffffff",
+                  backgroundColor:
+                    activeTab === "users" ? "#18181b" : "#ffffff",
                   color: activeTab === "users" ? "#ffffff" : "#18181b",
                   border: `1px solid ${activeTab === "users" ? "#18181b" : "#e4e4e7"}`,
                 }}
@@ -135,7 +154,8 @@ export const Dashboard = () => {
                 id="admin-companies-tab-btn"
                 className="btn-outline"
                 style={{
-                  backgroundColor: activeTab === "companies" ? "#18181b" : "#ffffff",
+                  backgroundColor:
+                    activeTab === "companies" ? "#18181b" : "#ffffff",
                   color: activeTab === "companies" ? "#ffffff" : "#18181b",
                   border: `1px solid ${activeTab === "companies" ? "#18181b" : "#e4e4e7"}`,
                 }}
@@ -151,7 +171,9 @@ export const Dashboard = () => {
         {isAdmin && activeTab === "companies" && <CompaniesManagement />}
 
         {activeTab === "overview" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}
+          >
             <div
               style={{
                 display: "grid",
@@ -167,13 +189,26 @@ export const Dashboard = () => {
                   padding: "1.25rem",
                 }}
               >
-                <div style={{ fontSize: "0.8rem", color: "#71717a", marginBottom: "0.35rem" }}>
+                <div
+                  style={{
+                    fontSize: "0.8rem",
+                    color: "#71717a",
+                    marginBottom: "0.35rem",
+                  }}
+                >
                   Active Workspace
                 </div>
                 <div style={{ fontSize: "1.1rem", fontWeight: "600" }}>
                   {selectedCompany.name}
                 </div>
-                <div style={{ fontSize: "0.75rem", color: "#a1a1aa", marginTop: "0.25rem", fontFamily: "monospace" }}>
+                <div
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "#a1a1aa",
+                    marginTop: "0.25rem",
+                    fontFamily: "monospace",
+                  }}
+                >
                   {selectedCompany.id}
                 </div>
               </div>
@@ -186,13 +221,25 @@ export const Dashboard = () => {
                   padding: "1.25rem",
                 }}
               >
-                <div style={{ fontSize: "0.8rem", color: "#71717a", marginBottom: "0.35rem" }}>
+                <div
+                  style={{
+                    fontSize: "0.8rem",
+                    color: "#71717a",
+                    marginBottom: "0.35rem",
+                  }}
+                >
                   User Role
                 </div>
                 <div style={{ fontSize: "1.1rem", fontWeight: "600" }}>
                   {user.role || (isAdmin ? "ADMIN" : "USER")}
                 </div>
-                <div style={{ fontSize: "0.75rem", color: "#a1a1aa", marginTop: "0.25rem" }}>
+                <div
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "#a1a1aa",
+                    marginTop: "0.25rem",
+                  }}
+                >
                   {user.email}
                 </div>
               </div>
@@ -205,18 +252,30 @@ export const Dashboard = () => {
                   padding: "1.25rem",
                 }}
               >
-                <div style={{ fontSize: "0.8rem", color: "#71717a", marginBottom: "0.35rem" }}>
+                <div
+                  style={{
+                    fontSize: "0.8rem",
+                    color: "#71717a",
+                    marginBottom: "0.35rem",
+                  }}
+                >
                   Assigned Companies
                 </div>
                 <div style={{ fontSize: "1.1rem", fontWeight: "600" }}>
                   {user.companies?.length || 1}
                 </div>
-                <div style={{ fontSize: "0.75rem", color: "#a1a1aa", marginTop: "0.25rem" }}>
+                <div
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "#a1a1aa",
+                    marginTop: "0.25rem",
+                  }}
+                >
                   Total accessible workspaces
                 </div>
               </div>
             </div>
-
+                  
             <div
               style={{
                 background: "#ffffff",
@@ -225,7 +284,13 @@ export const Dashboard = () => {
                 padding: "1.25rem",
               }}
             >
-              <div style={{ fontWeight: "600", fontSize: "0.9rem", marginBottom: "0.75rem" }}>
+              <div
+                style={{
+                  fontWeight: "600",
+                  fontSize: "0.9rem",
+                  marginBottom: "0.75rem",
+                }}
+              >
                 Granted Permissions
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
@@ -252,7 +317,13 @@ export const Dashboard = () => {
                   padding: "1.25rem",
                 }}
               >
-                <div style={{ fontWeight: "600", fontSize: "0.9rem", marginBottom: "0.75rem" }}>
+                <div
+                  style={{
+                    fontWeight: "600",
+                    fontSize: "0.9rem",
+                    marginBottom: "0.75rem",
+                  }}
+                >
                   Admin Quick Actions
                 </div>
                 <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>

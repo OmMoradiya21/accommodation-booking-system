@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../../lib/axios";
 import type { Company } from "../../types.model";
+import { CreateUser } from "../CreateUser";
 
 interface RoleItem {
   id: string;
