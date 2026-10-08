@@ -12,20 +12,17 @@ export const CompaniesManagement = () => {
   const [companies, setCompanies] = useState<ExtendedCompany[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Create Form State
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [industry, setIndustry] = useState("");
   const [isCreating, setIsCreating] = useState(false);
 
-  // Edit State
   const [editingCompany, setEditingCompany] = useState<ExtendedCompany | null>(null);
   const [editName, setEditName] = useState("");
   const [editAddress, setEditAddress] = useState("");
   const [editIndustry, setEditIndustry] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // Feedback State
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const loadCompanies = async () => {
@@ -150,7 +147,6 @@ export const CompaniesManagement = () => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-      {/* Feedback banner */}
       {feedback && (
         <div
           style={{
@@ -166,7 +162,6 @@ export const CompaniesManagement = () => {
         </div>
       )}
 
-      {/* Edit Company Modal/Inline Box if active */}
       {editingCompany && (
         <div
           style={{
@@ -203,7 +198,7 @@ export const CompaniesManagement = () => {
                 </label>
                 <input
                   type="text"
-                  className="minimal-input"
+                  className="input"
                   required
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
@@ -216,7 +211,7 @@ export const CompaniesManagement = () => {
                 </label>
                 <input
                   type="text"
-                  className="minimal-input"
+                  className="input"
                   value={editAddress}
                   onChange={(e) => setEditAddress(e.target.value)}
                 />
@@ -228,7 +223,7 @@ export const CompaniesManagement = () => {
                 </label>
                 <input
                   type="text"
-                  className="minimal-input"
+                  className="input"
                   value={editIndustry}
                   onChange={(e) => setEditIndustry(e.target.value)}
                 />
@@ -238,7 +233,7 @@ export const CompaniesManagement = () => {
             <div style={{ display: "flex", gap: "0.5rem" }}>
               <button
                 type="submit"
-                className="btn-minimal"
+                className="btn-primary"
                 style={{ width: "auto", padding: "0.5rem 1.25rem" }}
                 disabled={isUpdating}
               >
@@ -256,7 +251,6 @@ export const CompaniesManagement = () => {
         </div>
       )}
 
-      {/* Create Company Minimal Form */}
       <div
         style={{
           background: "#ffffff",
@@ -289,7 +283,7 @@ export const CompaniesManagement = () => {
               </label>
               <input
                 type="text"
-                className="minimal-input"
+                className="input"
                 placeholder="e.g. Apex Hospitality Corp"
                 required
                 value={name}
@@ -303,7 +297,7 @@ export const CompaniesManagement = () => {
               </label>
               <input
                 type="text"
-                className="minimal-input"
+                className="input"
                 placeholder="e.g. 100 Main St, Suite 400"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
@@ -316,7 +310,7 @@ export const CompaniesManagement = () => {
               </label>
               <input
                 type="text"
-                className="minimal-input"
+                className="input"
                 placeholder="e.g. Hospitality / Lodging"
                 value={industry}
                 onChange={(e) => setIndustry(e.target.value)}
@@ -326,7 +320,7 @@ export const CompaniesManagement = () => {
 
           <button
             type="submit"
-            className="btn-minimal"
+            className="btn-primary"
             style={{ width: "auto", padding: "0.55rem 1.25rem" }}
             disabled={isCreating}
           >
@@ -335,7 +329,6 @@ export const CompaniesManagement = () => {
         </form>
       </div>
 
-      {/* Companies List Minimal Table */}
       <div
         style={{
           background: "#ffffff",
@@ -364,7 +357,7 @@ export const CompaniesManagement = () => {
           </div>
         ) : (
           <div style={{ overflowX: "auto" }}>
-            <table className="minimal-table">
+            <table className="table">
               <thead>
                 <tr>
                   <th>Company Name</th>

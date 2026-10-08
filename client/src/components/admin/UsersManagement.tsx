@@ -22,7 +22,6 @@ export const UsersManagement = () => {
   const [roles, setRoles] = useState<RoleItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Form state
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -156,7 +155,6 @@ export const UsersManagement = () => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-      {/* Feedback banner */}
       {feedback && (
         <div
           style={{
@@ -172,7 +170,6 @@ export const UsersManagement = () => {
         </div>
       )}
 
-      {/* Create User Minimal Form */}
       <div
         style={{
           background: "#ffffff",
@@ -205,7 +202,7 @@ export const UsersManagement = () => {
               </label>
               <input
                 type="text"
-                className="minimal-input"
+                className="input"
                 placeholder="e.g. Alex Smith"
                 required
                 value={name}
@@ -219,7 +216,7 @@ export const UsersManagement = () => {
               </label>
               <input
                 type="email"
-                className="minimal-input"
+                className="input"
                 placeholder="alex@example.com"
                 required
                 value={email}
@@ -233,7 +230,7 @@ export const UsersManagement = () => {
               </label>
               <input
                 type="password"
-                className="minimal-input"
+                className="input"
                 placeholder="Min 6 characters"
                 required
                 value={password}
@@ -246,7 +243,7 @@ export const UsersManagement = () => {
                 Role
               </label>
               <select
-                className="minimal-input"
+                className="input"
                 value={roleId}
                 onChange={(e) => setRoleId(e.target.value)}
               >
@@ -263,7 +260,6 @@ export const UsersManagement = () => {
             </div>
           </div>
 
-          {/* Company Multi-Select Checkboxes */}
           <div style={{ marginBottom: "1.25rem" }}>
             <label style={{ display: "block", fontSize: "0.8rem", fontWeight: "500", marginBottom: "0.4rem" }}>
               Assigned Companies (Select one or more)
@@ -305,7 +301,7 @@ export const UsersManagement = () => {
 
           <button
             type="submit"
-            className="btn-minimal"
+            className="btn-primary"
             style={{ width: "auto", padding: "0.55rem 1.25rem" }}
             disabled={isSubmitting}
           >
@@ -314,7 +310,6 @@ export const UsersManagement = () => {
         </form>
       </div>
 
-      {/* Users List Minimal Table */}
       <div
         style={{
           background: "#ffffff",
@@ -343,7 +338,7 @@ export const UsersManagement = () => {
           </div>
         ) : (
           <div style={{ overflowX: "auto" }}>
-            <table className="minimal-table">
+            <table className="table">
               <thead>
                 <tr>
                   <th>Name</th>
@@ -359,7 +354,7 @@ export const UsersManagement = () => {
                     <td style={{ fontWeight: "500" }}>{u.name}</td>
                     <td style={{ color: "#71717a" }}>{u.email}</td>
                     <td>
-                      <span className="badge-minimal">
+                      <span className="badge">
                         {u.role?.name || "USER"}
                       </span>
                     </td>

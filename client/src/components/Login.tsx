@@ -21,7 +21,6 @@ export const Login = () => {
       const data = await loginUser(email, password);
 
       if (data?.accessToken && data?.user) {
-        // Store only accessToken in localStorage, user in React state
         login(data.accessToken, data.user);
         navigate("/company");
       } else {
@@ -112,7 +111,7 @@ export const Login = () => {
               id="email"
               type="email"
               placeholder="name@example.com"
-              className="minimal-input"
+              className="input"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -136,7 +135,7 @@ export const Login = () => {
               id="password"
               type="password"
               placeholder="••••••••"
-              className="minimal-input"
+              className="input"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -147,7 +146,7 @@ export const Login = () => {
           <button
             id="login-submit-btn"
             type="submit"
-            className="btn-minimal"
+            className="btn-primary"
             disabled={isLoading}
           >
             {isLoading ? "Signing in..." : "Sign in"}

@@ -9,10 +9,8 @@ export const Dashboard = () => {
     useGlobalContext();
   const navigate = useNavigate();
 
-  // Admin tab navigation: "overview" | "users" | "companies"
   const [activeTab, setActiveTab] = useState<"overview" | "users" | "companies">("overview");
 
-  // Determine admin privileges
   const isAdmin = Boolean(
     user?.role?.toLowerCase() === "admin" ||
       user?.permissions?.includes("can_manage_users") ||
@@ -36,8 +34,7 @@ export const Dashboard = () => {
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#fafafa" }}>
-      {/* Minimal Navbar */}
-      <header className="navbar-minimal">
+      <header className="navbar">
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           <span style={{ fontWeight: "600", fontSize: "0.95rem" }}>
             Accommodation Booking
@@ -61,7 +58,7 @@ export const Dashboard = () => {
 
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           {isAdmin && (
-            <span className="badge-minimal dark">
+            <span className="badge dark">
               ADMIN
             </span>
           )}
@@ -81,9 +78,7 @@ export const Dashboard = () => {
         </div>
       </header>
 
-      {/* Main Body */}
       <main style={{ maxWidth: "1000px", margin: "2rem auto", padding: "0 1.5rem" }}>
-        {/* Header & Tabs */}
         <div style={{ marginBottom: "1.5rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem" }}>
             <div>
@@ -100,7 +95,6 @@ export const Dashboard = () => {
             </div>
           </div>
 
-          {/* Conditional Admin Navigation Tabs */}
           {isAdmin && (
             <div
               style={{
@@ -153,14 +147,11 @@ export const Dashboard = () => {
           )}
         </div>
 
-        {/* Conditional rendering for Admin Tabs */}
         {isAdmin && activeTab === "users" && <UsersManagement />}
         {isAdmin && activeTab === "companies" && <CompaniesManagement />}
 
-        {/* Workspace Overview Tab */}
         {activeTab === "overview" && (
           <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-            {/* Quick Status Cards */}
             <div
               style={{
                 display: "grid",
@@ -226,7 +217,6 @@ export const Dashboard = () => {
               </div>
             </div>
 
-            {/* Permissions Card */}
             <div
               style={{
                 background: "#ffffff",
@@ -241,7 +231,7 @@ export const Dashboard = () => {
               <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
                 {user.permissions && user.permissions.length > 0 ? (
                   user.permissions.map((p) => (
-                    <span key={p} className="badge-minimal">
+                    <span key={p} className="badge">
                       {p}
                     </span>
                   ))
@@ -253,7 +243,6 @@ export const Dashboard = () => {
               </div>
             </div>
 
-            {/* Admin Quick Action Shortcuts */}
             {isAdmin && (
               <div
                 style={{

@@ -29,15 +29,13 @@ export const CompanySelect = () => {
   const companies: Company[] = user.companies || [];
 
   const handleSelect = (company: Company) => {
-    // Store selected company in React state only (not in localStorage)
     selectCompany(company);
     navigate("/dashboard");
   };
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#fafafa" }}>
-      {/* Minimal Top Bar */}
-      <header className="navbar-minimal">
+      <header className="navbar">
         <div style={{ fontWeight: "600", fontSize: "0.95rem" }}>
           Accommodation Booking
         </div>
@@ -58,7 +56,6 @@ export const CompanySelect = () => {
         </div>
       </header>
 
-      {/* Main Content */}
       <main style={{ maxWidth: "680px", margin: "2.5rem auto", padding: "0 1.5rem" }}>
         <div style={{ marginBottom: "1.75rem" }}>
           <h1 style={{ fontSize: "1.35rem", fontWeight: "600", marginBottom: "0.25rem" }}>
