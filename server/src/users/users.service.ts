@@ -35,7 +35,14 @@ export class UsersService {
       role_id: roleId,
     });
 
-    return savedUser;
+    if (createUserDto.company_ids && createUserDto.company_ids.length > 0) {
+      await this.userRepository.linkUserToCompanies(
+        savedUser.id,
+        createUserDto.company_ids,
+      );
+    }
+
+    return this.userRepository.findByIdWithRelations(savedUser.id);
   }
 
   async findAll() {

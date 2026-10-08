@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity.ts';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from './dto/create-user.dto.ts';
+import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto.ts';
 
 @Injectable()
@@ -13,16 +13,27 @@ export class UserRepository {
   ) {}
   async findAll() {
     const users = await this.userRepository.find({
-      relations: { role: true },
+      relations: { role: true, companies: true },
       select: {
         id: true,
         name: true,
         email: true,
         role: { id: true, name: true },
+        companies: { id: true, name: true },
         createdAt: true,
       },
+      order: { createdAt: 'DESC' },
     });
     return users;
+  }
+
+  async linkUserToCompanies(userId: string, companyIds: string[]) {
+    for (const companyId of companyIds) {
+      await this.userRepository.manager.query(
+        `INSERT INTO user_companies (user_id, company_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+        [userId, companyId],
+      );
+    }
   }
 
   async findOne(id: string) {
@@ -64,8 +75,16 @@ export class UserRepository {
     });
     return user;
   }
-  async saveUser(createUserDto: CreateUserDto) {
-    const savedUser = await this.userRepository.save(createUserDto);
+  async saveUser(createUserDto: Partial<User>) {
+    if (
+      createUserDto.password &&
+      !createUserDto.password.startsWith('$2b$') &&
+      !createUserDto.password.startsWith('$2a$')
+    ) {
+      createUserDto.password = await bcrypt.hash(createUserDto.password, 10);
+    }
+    const user = this.userRepository.create(createUserDto);
+    const savedUser = await this.userRepository.save(user);
     return savedUser;
   }
 

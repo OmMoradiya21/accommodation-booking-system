@@ -74,7 +74,6 @@ export class User {
     if (this.password.startsWith('$2b$') || this.password.startsWith('$2a$')) {
       return bcrypt.compare(password, this.password);
     }
-    // TODO : Remove and throw error after development
     return this.password === password;
   }
 }

@@ -34,10 +34,11 @@ export class JwtRefreshAuthGuard implements CanActivate {
         ignoreExpiration: true,
       });
 
+      const paramUserId = request.params.userId;
+      const isParamKeyword = paramUserId === 'refresh';
+
       const userId =
-        request.params.userId && request.params.userId !== 'undefined'
-          ? request.params.userId
-          : payload.sub;
+        paramUserId && !isParamKeyword ? paramUserId : payload.sub;
 
       if (!userId) {
         throw new UnauthorizedException('Valid user ID required');

@@ -34,7 +34,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAccessAuthGuard)
-  @Get(['current-user', 'current-user/:userId'])
+  @Get(['current-user'])
   async getCurrentUser(
     @CurrentUser() currentUserPayload: CreatePayloadDto,
     @Req() req: Request,
@@ -48,7 +48,7 @@ export class AuthController {
 
   @SkipJwtAccessAuthGuard()
   @UseGuards(JwtRefreshAuthGuard)
-  @Get('access-token/:userId')
+  @Get(['refresh'])
   async getAccessToken(@CurrentUser() currentUserPayload: CreatePayloadDto) {
     const data = await this.authService.generateAccessToken(currentUserPayload);
     return { isAuthenticated: true, accessToken: data.accessToken, access_token: data.accessToken };
