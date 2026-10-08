@@ -1,11 +1,9 @@
-import { createBrowserRouter, Navigate } from 'react-router';
-import { requireRole } from './auth/protectedLoader';
-import { ProtectedLayout } from './layouts/ProtectedLayout';
-
-import { ROLES } from './constants/role.constant';
-import { ErrorElement } from './components/ErrorElement';
-import { Login } from './components/Login';
-import { GlobalContextProvider } from './components/AuthProvider';
+import { createBrowserRouter, Navigate } from "react-router";
+import { GlobalContextProvider } from "./components/AuthProvider";
+import { ErrorElement } from "./components/ErrorElement";
+import { Login } from "./components/Login";
+import { CompanySelect } from "./components/CompanySelect";
+import { Dashboard } from "./components/Dashboard";
 
 export const router = createBrowserRouter([
   {
@@ -15,27 +13,22 @@ export const router = createBrowserRouter([
       {
         index: true,
         Component: Login,
-        ErrorBoundary: ErrorElement,
+      },
+      {
+        path: "login",
+        Component: Login,
       },
       {
         path: "company",
-        Component: ProtectedLayout,
-        children: [
-          {
-            Component: AppLayout,
-            children: [
-              {
-                index: true,
-                Component: Dashboard,
-              },
-              {
-                path: "projects",
-                Component: Customer,
-              },
-              
-            ],
-          },
-        ],
+        Component: CompanySelect,
+      },
+      {
+        path: "dashboard",
+        Component: Dashboard,
+      },
+      {
+        path: "*",
+        Component: () => <Navigate to="/" replace />,
       },
     ],
   },

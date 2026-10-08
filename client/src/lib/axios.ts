@@ -11,6 +11,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
+    // Only store and read accessToken from localStorage
     const accessToken = localStorage.getItem("accessToken");
 
     if (accessToken) {
@@ -21,47 +22,77 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
+// Manage single in-flight refresh promise to prevent duplicate requests
+let refreshPromise: Promise<string | null> | null = null;
+
+const requestNewAccessToken = async (): Promise<string | null> => {
+  const currentToken = localStorage.getItem("accessToken");
+  if (!currentToken) return null;
+
+  try {
+    const res = await axios.get(`${BASE_URL}/auth/refresh`, {
+      headers: {
+        Authorization: `Bearer ${currentToken}`,
+      },
+    });
+
+    const newToken: string | undefined =
+      res.data?.accessToken || res.data?.access_token;
+
+    if (newToken) {
+      localStorage.setItem("accessToken", newToken);
+      return newToken;
+    }
+    return null;
+  } catch {
+    localStorage.removeItem("accessToken");
+    return null;
+  } finally {
+    refreshPromise = null;
+  }
+};
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
+    const isAuthRoute =
+      originalRequest?.url?.includes("/auth/login") ||
+      originalRequest?.url?.includes("/auth/register") ||
+      originalRequest?.url?.includes("/auth/refresh");
+
     if (
       error.response?.status === 401 &&
-      !originalRequest._retry &&
-      !originalRequest.url?.includes("/auth/")
+      !originalRequest?._retry &&
+      !isAuthRoute
     ) {
       originalRequest._retry = true;
-      try {
-        const savedUser = JSON.parse(localStorage.getItem("user") || "null");
-        const userId = savedUser?.sub;
-        if (!userId) {
-          throw new Error("No user found");
-        }
-        const accessToken = localStorage.getItem("accessToken");
-        if (!accessToken) {
-          throw new Error("No token found");
-        }
-        const refreshResponse = await axios.get(`${BASE_URL}/auth/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        const newToken = refreshResponse.data?.access_token;
-        console.log("get new token by axios: ");
-        if (newToken) {
-          localStorage.setItem("accessToken", newToken);
-          originalRequest.headers.Authorization = `Bearer ${newToken}`;
-          return api(originalRequest);
-        }
-      } catch (refreshError) {
-        localStorage.removeItem("accessToken");
+
+      // Deduplicate simultaneous refresh requests
+      if (!refreshPromise) {
+        refreshPromise = requestNewAccessToken();
+      }
+
+      const newToken = await refreshPromise;
+
+      if (newToken) {
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return api(originalRequest);
+      }
+
+      // If refresh failed, send user to login
+      if (
+        typeof window !== "undefined" &&
+        window.location.pathname !== "/" &&
+        window.location.pathname !== "/login"
+      ) {
         window.location.href = "/";
-        return Promise.reject(refreshError);
       }
     }
+
     return Promise.reject(error);
   },
 );
 
-export { api };
+export { api, BASE_URL };
