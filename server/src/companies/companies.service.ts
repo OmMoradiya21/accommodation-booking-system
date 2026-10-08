@@ -24,7 +24,10 @@ export class CompaniesService {
     return company;
   }
 
-  async update(id: string, updateCompanyDto: UpdateCompanyDto): Promise<Company> {
+  async update(
+    id: string,
+    updateCompanyDto: UpdateCompanyDto,
+  ): Promise<Company> {
     const updated = await this.companiesRepository.update(id, updateCompanyDto);
     if (!updated) {
       throw new NotFoundException(`Company #${id} not found to update`);

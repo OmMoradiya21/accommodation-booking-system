@@ -12,7 +12,6 @@ import {
 import { Company } from '../../companies/entities/companies.entity.ts';
 import { Booking } from '../../bookings/entities/bookings.entity.ts';
 
-
 @Entity('customers')
 export class Customer {
   @PrimaryGeneratedColumn('uuid')

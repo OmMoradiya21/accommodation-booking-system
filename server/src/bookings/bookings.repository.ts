@@ -54,7 +54,10 @@ export class BookingsRepository {
     });
   }
 
-  async update(id: string, updateBookingDto: UpdateBookingDto): Promise<Booking | null> {
+  async update(
+    id: string,
+    updateBookingDto: UpdateBookingDto,
+  ): Promise<Booking | null> {
     const booking = await this.bookingRepository.preload({
       id,
       ...updateBookingDto,

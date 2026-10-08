@@ -10,9 +10,7 @@ import { UpdatePermissionDto } from './dto/update-permission.dto.ts';
 
 @Injectable()
 export class PermissionsService {
-  constructor(
-    private readonly permissionsRepository: PermissionsRepository,
-  ) {}
+  constructor(private readonly permissionsRepository: PermissionsRepository) {}
 
   async create(createPermissionDto: CreatePermissionDto): Promise<Permission> {
     const existing = await this.permissionsRepository.findByName(

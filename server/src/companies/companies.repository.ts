@@ -30,7 +30,10 @@ export class CompaniesRepository {
     return this.companyRepository.save(company);
   }
 
-  async update(id: string, updateCompanyDto: UpdateCompanyDto): Promise<Company | null> {
+  async update(
+    id: string,
+    updateCompanyDto: UpdateCompanyDto,
+  ): Promise<Company | null> {
     const company = await this.companyRepository.preload({
       id,
       ...updateCompanyDto,

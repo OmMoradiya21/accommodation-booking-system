@@ -31,12 +31,17 @@ export class PermissionsRepository {
     });
   }
 
-  async savePermission(createPermissionDto: CreatePermissionDto): Promise<Permission> {
+  async savePermission(
+    createPermissionDto: CreatePermissionDto,
+  ): Promise<Permission> {
     const permission = this.permissionRepository.create(createPermissionDto);
     return this.permissionRepository.save(permission);
   }
 
-  async update(id: string, updatePermissionDto: UpdatePermissionDto): Promise<Permission | null> {
+  async update(
+    id: string,
+    updatePermissionDto: UpdatePermissionDto,
+  ): Promise<Permission | null> {
     const permission = await this.permissionRepository.preload({
       id,
       ...updatePermissionDto,

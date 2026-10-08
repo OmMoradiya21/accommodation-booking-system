@@ -25,12 +25,19 @@ export class AccommodationsRepository {
     });
   }
 
-  async saveAccommodation(createAccommodationDto: CreateAccommodationDto): Promise<Accommodation> {
-    const accommodation = this.accommodationRepository.create(createAccommodationDto);
+  async saveAccommodation(
+    createAccommodationDto: CreateAccommodationDto,
+  ): Promise<Accommodation> {
+    const accommodation = this.accommodationRepository.create(
+      createAccommodationDto,
+    );
     return this.accommodationRepository.save(accommodation);
   }
 
-  async update(id: string, updateAccommodationDto: UpdateAccommodationDto): Promise<Accommodation | null> {
+  async update(
+    id: string,
+    updateAccommodationDto: UpdateAccommodationDto,
+  ): Promise<Accommodation | null> {
     const accommodation = await this.accommodationRepository.preload({
       id,
       ...updateAccommodationDto,

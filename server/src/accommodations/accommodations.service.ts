@@ -10,8 +10,12 @@ export class AccommodationsService {
     private readonly accommodationsRepository: AccommodationsRepository,
   ) {}
 
-  async create(createAccommodationDto: CreateAccommodationDto): Promise<Accommodation> {
-    return this.accommodationsRepository.saveAccommodation(createAccommodationDto);
+  async create(
+    createAccommodationDto: CreateAccommodationDto,
+  ): Promise<Accommodation> {
+    return this.accommodationsRepository.saveAccommodation(
+      createAccommodationDto,
+    );
   }
 
   async findAll(): Promise<Accommodation[]> {

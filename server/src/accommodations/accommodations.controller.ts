@@ -13,9 +13,7 @@ import { UpdateAccommodationDto } from './dto/update-accommodation.dto.ts';
 
 @Controller('accommodations')
 export class AccommodationsController {
-  constructor(
-    private readonly accommodationsService: AccommodationsService,
-  ) {}
+  constructor(private readonly accommodationsService: AccommodationsService) {}
 
   @Post()
   create(@Body() createAccommodationDto: CreateAccommodationDto) {

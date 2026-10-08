@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  UseGuards,
-  Req,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import type { Request } from 'express';
 import { AuthService } from './auth.service.ts';
 import { LocalAuthGuard } from './guards/local-auth.guard.ts';
@@ -51,6 +44,10 @@ export class AuthController {
   @Get(['refresh'])
   async getAccessToken(@CurrentUser() currentUserPayload: CreatePayloadDto) {
     const data = await this.authService.generateAccessToken(currentUserPayload);
-    return { isAuthenticated: true, accessToken: data.accessToken, access_token: data.accessToken };
+    return {
+      isAuthenticated: true,
+      accessToken: data.accessToken,
+      access_token: data.accessToken,
+    };
   }
 }

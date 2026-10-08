@@ -33,7 +33,10 @@ export class CustomersRepository {
     });
   }
 
-  async findByEmail(email: string, companyId?: string): Promise<Customer | null> {
+  async findByEmail(
+    email: string,
+    companyId?: string,
+  ): Promise<Customer | null> {
     const where: { email: string; company_id?: string } = { email };
     if (companyId) {
       where.company_id = companyId;
@@ -46,7 +49,10 @@ export class CustomersRepository {
     return this.customerRepository.save(customer);
   }
 
-  async update(id: string, updateCustomerDto: UpdateCustomerDto): Promise<Customer | null> {
+  async update(
+    id: string,
+    updateCustomerDto: UpdateCustomerDto,
+  ): Promise<Customer | null> {
     const customer = await this.customerRepository.preload({
       id,
       ...updateCustomerDto,
