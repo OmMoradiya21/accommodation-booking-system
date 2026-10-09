@@ -4,13 +4,14 @@ import App from "./App";
 import "./index.css";
 
 import Lara from "@primeuix/themes/lara";
+import { definePreset } from "@primeuix/themes";
 import { PrimeReactProvider } from "@primereact/core";
-import { CreateCustomer } from "./components/CreateCustomer";
+import { ManageCustomer } from "./components/ManageCustomer";
 
 const primeReact = {
-  theme: {
-    preset: Lara,
-  },
+  // theme: {
+  //   preset: ,
+  // },
 };
 
 const rootElement = document.getElementById("root");
@@ -18,9 +19,8 @@ if (rootElement) {
   createRoot(rootElement).render(
     <PrimeReactProvider {...primeReact}>
       <StrictMode>
-        {/* Toggle between CreateCustomer for component testing or App for full router */}
-        {/* <App /> */}
-        <CreateCustomer />
+        {/* Toggle between ManageCustomer for component testing or App for full router */}
+        <App />
       </StrictMode>
     </PrimeReactProvider>,
   );

@@ -3,14 +3,14 @@ import { useNavigate } from "react-router";
 import { useGlobalContext } from "../hooks/useGlobalContext";
 import { UsersManagement } from "./admin/UsersManagement";
 import { CompaniesManagement } from "./admin/CompaniesManagement";
+import { ManageCustomer } from "./ManageCustomer";
 
 export const Dashboard = () => {
   const { user, selectedCompany, logout, isAuthenticated, isLoading } =
     useGlobalContext();
   const navigate = useNavigate();
-
   const [activeTab, setActiveTab] = useState<
-    "overview" | "users" | "companies"
+    "overview" | "users" | "companies" | "customers"
   >("users");
 
   const isAdmin = Boolean(
@@ -33,7 +33,6 @@ export const Dashboard = () => {
   if (isLoading || !user || !selectedCompany) {
     return null;
   }
-  //style={{ minHeight: "100vh", backgroundColor: "#fafafa" } }
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#fafafa" }}>
       <header className="navbar">
@@ -59,7 +58,7 @@ export const Dashboard = () => {
             </button>
           </div>
         </div>
-      
+
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           {isAdmin && <span className="badge dark">ADMIN</span>}
           <span style={{ fontSize: "0.85rem", color: "#71717a" }}>
@@ -163,12 +162,27 @@ export const Dashboard = () => {
               >
                 Company CRUD
               </button>
+              <button
+                type="button"
+                id="admin-customer-tab-btn"
+                className="btn-outline"
+                style={{
+                  backgroundColor:
+                    activeTab === "customers" ? "#18181b" : "#ffffff",
+                  color: activeTab === "customers" ? "#ffffff" : "#18181b",
+                  border: `1px solid ${activeTab === "customers" ? "#18181b" : "#e4e4e7"}`,
+                }}
+                onClick={() => setActiveTab("customers")}
+              >
+                Customers
+              </button>
             </div>
           )}
         </div>
 
         {isAdmin && activeTab === "users" && <UsersManagement />}
         {isAdmin && activeTab === "companies" && <CompaniesManagement />}
+        {isAdmin && activeTab === "customers" && <ManageCustomer />}
 
         {activeTab === "overview" && (
           <div
@@ -275,7 +289,7 @@ export const Dashboard = () => {
                 </div>
               </div>
             </div>
-                  
+
             <div
               style={{
                 background: "#ffffff",
