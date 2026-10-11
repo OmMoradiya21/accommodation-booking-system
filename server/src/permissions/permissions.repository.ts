@@ -15,19 +15,24 @@ export class PermissionsRepository {
   async findAll(): Promise<Permission[]> {
     return this.permissionRepository.find({
       order: { createdAt: 'DESC' },
+      select: {
+        id: true,
+        name: true,
+      },
     });
   }
 
   async findOne(id: string): Promise<Permission | null> {
     return this.permissionRepository.findOne({
       where: { id },
-      relations: { users: true },
+      relations: { roles: true },
     });
   }
 
   async findByName(name: string): Promise<Permission | null> {
     return this.permissionRepository.findOne({
       where: { name },
+      relations: { roles: true },
     });
   }
 

@@ -39,13 +39,14 @@ export class UserRepository {
   async findOne(id: string) {
     const user = await this.userRepository.findOne({
       where: { id },
-      relations: { role: true },
+      relations: { role: true, companies: true },
       select: {
         id: true,
         name: true,
         email: true,
         role: { id: true, name: true },
         createdAt: true,
+        companies: { id: true, name: true },
       },
     });
     return user;
@@ -55,9 +56,15 @@ export class UserRepository {
     return this.userRepository.findOne({
       where: { id },
       relations: {
-        role: true,
-        permissions: true,
+        role: { permissions: true },
         companies: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: { id: true, name: true, permissions: { id: true, name: true } },
+        companies: { id: true, name: true },
       },
     });
   }
@@ -89,11 +96,22 @@ export class UserRepository {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
+    const { company_ids: _company_ids, ...rest } = updateUserDto;
     const updatedUser = await this.userRepository.preload({
       id,
-      ...updateUserDto,
+      ...rest,
     });
     return updatedUser;
+  }
+
+  async updateUserCompanies(userId: string, companyIds: string[]) {
+    await this.userRepository.manager.query(
+      `DELETE FROM user_companies WHERE user_id = $1`,
+      [userId],
+    );
+    if (companyIds.length > 0) {
+      await this.linkUserToCompanies(userId, companyIds);
+    }
   }
 
   async remove(user: User) {

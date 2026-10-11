@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { loginUser } from "../service/loginUser";
 import { useGlobalContext } from "../hooks/useGlobalContext";
+import { api } from "../lib/axios";
 
 export const Login = () => {
   const [email, setEmail] = useState("jane@example.com");
@@ -9,8 +9,13 @@ export const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const { login, isAuthenticated, user, selectedCompany } = useGlobalContext();
+  const { login, isAuthenticated, user } = useGlobalContext();
   const navigate = useNavigate();
+
+  const loginUser = async (email: string, password: string) => {
+  const res = await api.post("/auth/login", { email, password });
+  return res.data;
+};
 
   const handleLoginBtn = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -22,7 +27,7 @@ export const Login = () => {
 
       if (data?.accessToken && data?.user) {
         login(data.accessToken, data.user);
-        navigate("/company");
+        navigate("select-company");
       } else {
         setErrorMessage("Invalid credentials response.");
       }
@@ -41,70 +46,33 @@ export const Login = () => {
     }
   };
 
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      navigate("/select-company");
+    } else {
+      navigate("/");
+    }
+  }, [isAuthenticated, user, navigate]);
+
   return (
-    <div className="auth-wrapper">
-      <div className="auth-card">
-        <div style={{ marginBottom: "1.5rem" }}>
-          <h1 style={{ fontSize: "1.25rem", fontWeight: "600", marginBottom: "0.25rem" }}>
-            Sign in
-          </h1>
-          <p style={{ color: "#71717a", fontSize: "0.85rem" }}>
+    <div className="min-h-screen flex align-items-center justify-content-center p-3 surface-ground">
+      <div className="surface-card border-round shadow-1 border-1 surface-border p-5 w-full max-w-30rem">
+        <div className="mb-4">
+          <h1 className="text-2xl font-bold text-900 m-0 mb-1">Login</h1>
+          <p className="text-sm text-500 m-0">
             Enter your credentials to access your account
           </p>
         </div>
 
-        {isAuthenticated && user && (
-          <div
-            style={{
-              padding: "0.6rem 0.75rem",
-              borderRadius: "6px",
-              backgroundColor: "#f4f4f5",
-              fontSize: "0.8rem",
-              marginBottom: "1rem",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <span>Signed in as <strong>{user.email}</strong></span>
-            <button
-              type="button"
-              className="btn-outline"
-              style={{ padding: "0.2rem 0.5rem", fontSize: "0.75rem" }}
-              onClick={() => navigate(selectedCompany ? "/dashboard" : "/company")}
-            >
-              Continue &rarr;
-            </button>
-          </div>
-        )}
-
         {errorMessage && (
-          <div
-            style={{
-              padding: "0.6rem 0.75rem",
-              borderRadius: "6px",
-              backgroundColor: "#fef2f2",
-              border: "1px solid #fee2e2",
-              color: "#991b1b",
-              fontSize: "0.85rem",
-              marginBottom: "1rem",
-            }}
-          >
+          <div className="p-3 border-round bg-red-50 border-1 border-red-200 text-red-700 text-sm mb-3">
             {errorMessage}
           </div>
         )}
 
-        <form onSubmit={handleLoginBtn}>
-          <div style={{ marginBottom: "1rem" }}>
-            <label
-              htmlFor="email"
-              style={{
-                display: "block",
-                fontSize: "0.85rem",
-                fontWeight: "500",
-                marginBottom: "0.35rem",
-              }}
-            >
+        <form onSubmit={handleLoginBtn} className="flex flex-column gap-3">
+          <div className="flex flex-column gap-1">
+            <label htmlFor="email" className="text-sm font-medium text-700">
               Email
             </label>
             <input
@@ -119,16 +87,8 @@ export const Login = () => {
             />
           </div>
 
-          <div style={{ marginBottom: "1.25rem" }}>
-            <label
-              htmlFor="password"
-              style={{
-                display: "block",
-                fontSize: "0.85rem",
-                fontWeight: "500",
-                marginBottom: "0.35rem",
-              }}
-            >
+          <div className="flex flex-column gap-1">
+            <label htmlFor="password" className="text-sm font-medium text-700">
               Password
             </label>
             <input
@@ -146,51 +106,12 @@ export const Login = () => {
           <button
             id="login-submit-btn"
             type="submit"
-            className="btn-primary"
+            className="btn-primary w-full mt-2"
             disabled={isLoading}
           >
-            {isLoading ? "Signing in..." : "Sign in"}
+            {isLoading ? "Logging in..." : "Log in"}
           </button>
         </form>
-
-        <div
-          style={{
-            marginTop: "1.5rem",
-            paddingTop: "1rem",
-            borderTop: "1px solid #e4e4e7",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <span style={{ fontSize: "0.75rem", color: "#71717a" }}>Quick fill:</span>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
-            <button
-              type="button"
-              className="btn-outline"
-              style={{ fontSize: "0.75rem", padding: "0.25rem 0.5rem" }}
-              onClick={() => {
-                setEmail("jane@example.com");
-                setPassword("user123");
-                setErrorMessage(null);
-              }}
-            >
-              Staff
-            </button>
-            <button
-              type="button"
-              className="btn-outline"
-              style={{ fontSize: "0.75rem", padding: "0.25rem 0.5rem" }}
-              onClick={() => {
-                setEmail("admin@example.com");
-                setPassword("admin123");
-                setErrorMessage(null);
-              }}
-            >
-              Admin
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

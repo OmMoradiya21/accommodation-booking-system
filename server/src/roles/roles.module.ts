@@ -14,6 +14,6 @@ import { ROLES_LOOKUP } from './roles-lookup.ts';
     RolesRepository,
     { provide: ROLES_LOOKUP, useExisting: RolesService },
   ],
-  exports: [ROLES_LOOKUP],
+  exports: [RolesService, RolesRepository, ROLES_LOOKUP],
 })
 export class RolesModule {}

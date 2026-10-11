@@ -62,7 +62,14 @@ export class UsersService {
     if (!updatedUser) {
       throw new NotFoundException('User Not Found to update.');
     }
-    return this.userRepository.saveUser(updatedUser);
+    await this.userRepository.saveUser(updatedUser);
+    if (updateUserDto.company_ids !== undefined) {
+      await this.userRepository.updateUserCompanies(
+        id,
+        updateUserDto.company_ids,
+      );
+    }
+    return this.userRepository.findByIdWithRelations(id);
   }
 
   async remove(id: string) {

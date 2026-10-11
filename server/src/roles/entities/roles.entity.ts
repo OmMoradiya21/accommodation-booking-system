@@ -2,12 +2,15 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   type Relation,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity.ts';
+import { Permission } from '../../permissions/entities/permission.entity.ts';
 
 @Entity('roles')
 export class Role {
@@ -29,6 +32,17 @@ export class Role {
   @Column()
   description: string;
 
-  @Column('simple-array', { nullable: true, default: '' })
-  permissions: string[];
+  @ManyToMany(() => Permission, (permission) => permission.roles)
+  @JoinTable({
+    name: 'role_permissions',
+    joinColumn: {
+      name: 'role_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'permission_id',
+      referencedColumnName: 'id',
+    },
+  })
+  permissions: Relation<Permission>[];
 }

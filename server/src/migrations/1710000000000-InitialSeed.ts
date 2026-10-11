@@ -11,7 +11,6 @@ export class InitialSeed1710000000000 implements MigrationInterface {
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         name VARCHAR NOT NULL,
         description VARCHAR NOT NULL,
-        permissions VARCHAR DEFAULT '',
         "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
         "updatedAt" TIMESTAMP NOT NULL DEFAULT now()
       );
@@ -48,10 +47,10 @@ export class InitialSeed1710000000000 implements MigrationInterface {
         PRIMARY KEY (company_id, user_id)
       );
 
-      CREATE TABLE IF NOT EXISTS user_permissions (
-        user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      CREATE TABLE IF NOT EXISTS role_permissions (
+        role_id UUID NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
         permission_id UUID NOT NULL REFERENCES permissions(id) ON DELETE CASCADE,
-        PRIMARY KEY (user_id, permission_id)
+        PRIMARY KEY (role_id, permission_id)
       );
 
       CREATE TABLE IF NOT EXISTS accommodations (
@@ -101,21 +100,66 @@ export class InitialSeed1710000000000 implements MigrationInterface {
     // 3. Seed Base Permissions
     await queryRunner.query(`
       INSERT INTO permissions (id, name) VALUES
-        ('10000000-0000-0000-0000-000000000001', 'can_create_company'),
-        ('10000000-0000-0000-0000-000000000002', 'can_manage_customers'),
-        ('10000000-0000-0000-0000-000000000003', 'can_request_booking'),
-        ('10000000-0000-0000-0000-000000000004', 'can_approve_booking'),
-        ('10000000-0000-0000-0000-000000000005', 'can_manage_users'),
-        ('10000000-0000-0000-0000-000000000006', 'can_manage_accommodations')
+        ('10000000-0000-0000-0000-000000000001', 'user:create'),
+        ('10000000-0000-0000-0000-000000000002', 'user:read'),
+        ('10000000-0000-0000-0000-000000000003', 'user:update'),
+        ('10000000-0000-0000-0000-000000000004', 'user:delete'),
+        ('10000000-0000-0000-0000-000000000005', 'role:create'),
+        ('10000000-0000-0000-0000-000000000006', 'role:read'),
+        ('10000000-0000-0000-0000-000000000007', 'role:update'),
+        ('10000000-0000-0000-0000-000000000008', 'role:delete'),
+        ('10000000-0000-0000-0000-000000000009', 'permission:create'),
+        ('10000000-0000-0000-0000-000000000010', 'permission:read'),
+        ('10000000-0000-0000-0000-000000000011', 'permission:update'),
+        ('10000000-0000-0000-0000-000000000012', 'permission:delete'),
+        ('10000000-0000-0000-0000-000000000013', 'company:create'),
+        ('10000000-0000-0000-0000-000000000014', 'company:read'),
+        ('10000000-0000-0000-0000-000000000015', 'company:update'),
+        ('10000000-0000-0000-0000-000000000016', 'company:delete'),
+        ('10000000-0000-0000-0000-000000000017', 'customer:create'),
+        ('10000000-0000-0000-0000-000000000018', 'customer:read'),
+        ('10000000-0000-0000-0000-000000000019', 'customer:update'),
+        ('10000000-0000-0000-0000-000000000020', 'customer:delete'),
+        ('10000000-0000-0000-0000-000000000021', 'accommodation:create'),
+        ('10000000-0000-0000-0000-000000000022', 'accommodation:read'),
+        ('10000000-0000-0000-0000-000000000023', 'accommodation:update'),
+        ('10000000-0000-0000-0000-000000000024', 'accommodation:delete'),
+        ('10000000-0000-0000-0000-000000000025', 'booking:create'),
+        ('10000000-0000-0000-0000-000000000026', 'booking:read'),
+        ('10000000-0000-0000-0000-000000000027', 'booking:update'),
+        ('10000000-0000-0000-0000-000000000028', 'booking:delete'),
+        ('10000000-0000-0000-0000-000000000029', 'booking:approve')
       ON CONFLICT (id) DO NOTHING;
     `);
 
-    // 4. Seed Roles (ADMIN with all permissions, USER with basic permissions)
+    // 4. Seed Roles
     await queryRunner.query(`
-      INSERT INTO roles (id, name, description, permissions) VALUES
-        ('00000000-0000-0000-0000-000000000001', 'ADMIN', 'Super administrator with full system and company access', 'can_create_company,can_manage_customers,can_request_booking,can_approve_booking,can_manage_users,can_manage_accommodations'),
-        ('00000000-0000-0000-0000-000000000002', 'USER', 'Standard user with basic workspace access', 'can_manage_customers,can_request_booking')
+      INSERT INTO roles (id, name, description) VALUES
+        ('00000000-0000-0000-0000-000000000001', 'ADMIN', 'Super administrator with full system and multi-company access'),
+        ('00000000-0000-0000-0000-000000000002', 'MANAGER', 'Company manager capable of managing customers and approving bookings'),
+        ('00000000-0000-0000-0000-000000000003', 'USER', 'Standard user with basic workspace access')
       ON CONFLICT (id) DO NOTHING;
+
+      -- Seed Role Permissions
+      INSERT INTO role_permissions (role_id, permission_id)
+      SELECT '00000000-0000-0000-0000-000000000001', id FROM permissions
+      ON CONFLICT DO NOTHING;
+
+      INSERT INTO role_permissions (role_id, permission_id)
+      SELECT '00000000-0000-0000-0000-000000000002', id FROM permissions WHERE name IN (
+        'company:read', 'customer:create', 'customer:read', 'customer:update', 'customer:delete',
+        'accommodation:create', 'accommodation:read', 'accommodation:update', 'accommodation:delete',
+        'booking:create', 'booking:read', 'booking:update', 'booking:delete', 'booking:approve',
+        'user:read', 'role:read'
+      )
+      ON CONFLICT DO NOTHING;
+
+      INSERT INTO role_permissions (role_id, permission_id)
+      SELECT '00000000-0000-0000-0000-000000000003', id FROM permissions WHERE name IN (
+        'company:read', 'customer:create', 'customer:read', 'customer:update',
+        'accommodation:read', 'booking:create', 'booking:read'
+      )
+      ON CONFLICT DO NOTHING;
     `);
 
     // 5. Seed Initial Companies

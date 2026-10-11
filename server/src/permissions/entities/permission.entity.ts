@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
   type Relation,
 } from 'typeorm';
-import { User } from '../../users/entities/user.entity.ts';
+import { Role } from '../../roles/entities/roles.entity.ts';
 
 @Entity('permissions')
 export class Permission {
@@ -23,6 +23,6 @@ export class Permission {
   @Column({ unique: true })
   name: string;
 
-  @ManyToMany(() => User, (user) => user.permissions)
-  users: Relation<User>[];
+  @ManyToMany(() => Role, (role) => role.permissions)
+  roles: Relation<Role>[];
 }

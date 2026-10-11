@@ -60,24 +60,6 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    const permissionSet = new Set<string>();
-
-    if (user.role?.permissions) {
-      for (const p of user.role.permissions) {
-        if (p && p.trim()) {
-          permissionSet.add(p.trim());
-        }
-      }
-    }
-
-    if (user.permissions) {
-      for (const p of user.permissions) {
-        if (p && p.name && p.name.trim()) {
-          permissionSet.add(p.name.trim());
-        }
-      }
-    }
-
     const companies = (user.companies || []).map((company) => ({
       id: company.id,
       name: company.name,
@@ -87,8 +69,11 @@ export class AuthService {
       id: user.id,
       name: user.name,
       email: user.email,
+      role: user.role?.name,
       companies,
-      permissions: Array.from(permissionSet),
+      permissions: (user.role?.permissions || []).map((p: any) =>
+        typeof p === 'string' ? p : (p.name as string),
+      ),
     };
   }
 

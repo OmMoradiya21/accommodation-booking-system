@@ -16,9 +16,9 @@ export function getDataSourceOptions(): DataSourceOptions {
     username: process.env.DB_USERNAME || 'postgres',
     password: process.env.DB_PASSWORD || 'password',
     database: process.env.DB_NAME || 'accommodation_booking_system',
-    entities: [import.meta.dirname + '/**/*.entity.ts'],
-    migrations: [import.meta.dirname + '/migrations/**/*.ts'],
-    synchronize: true,
+    entities: [import.meta.dirname + '/**/*.entity{.ts,.js}'],
+    migrations: [import.meta.dirname + '/migrations/**/*{.ts,.js}'],
+    synchronize: false,
   };
 }
 

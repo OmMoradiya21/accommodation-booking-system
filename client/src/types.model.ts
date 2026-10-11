@@ -1,8 +1,11 @@
-import { ROLES } from "./constants/role.constant";
 
-export type Role = (typeof ROLES)[keyof typeof ROLES];
+export interface Role {
+  id: string;
+  name: string;
+  description: string;
+}
 
-export interface RoleItem {
+export interface Permission {
   id: string;
   name: string;
 }
@@ -27,6 +30,36 @@ export interface UserListItem {
   role?: { id: string; name: string };
   companies?: Company[];
   createdAt?: string;
+}
+
+export interface Accommodation {
+  id: string;
+  name: string;
+  description?: string;
+  location: string;
+  price_per_night: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type BookingStatus =
+  | "Pending"
+  | "Approved"
+  | "Declined";
+
+export interface Booking {
+  id: string;
+  company_id: string;
+  customer_id: string;
+  accommodation_id: string;
+  check_in: string;
+  check_out: string;
+  status: BookingStatus;
+  customer?: CustomerList;
+  accommodation?: Accommodation;
+  company?: Company;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface User {

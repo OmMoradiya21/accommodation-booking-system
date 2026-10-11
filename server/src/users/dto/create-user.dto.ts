@@ -23,7 +23,7 @@ export class CreateUserDto {
 
   @IsOptional()
   @IsString()
-  role_id?: string;
+  role_id: string;
 
   @IsOptional()
   @IsArray()

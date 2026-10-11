@@ -9,8 +9,6 @@ import { UsersModule } from '../users/users.module.ts';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtAccessStrategy } from './strategies/jwt-access.strategy.ts';
 import { LocalStrategy } from './strategies/local.strategy.ts';
-
-import { RolesGuard } from './guards/roles.guard.ts';
 import { AuthRepository } from './auth.repository.ts';
 
 @Module({
@@ -26,9 +24,7 @@ import { AuthRepository } from './auth.repository.ts';
     JwtAccessStrategy,
     LocalStrategy,
     { provide: APP_GUARD, useClass: JwtAccessAuthGuard },
-    { provide: APP_GUARD, useClass: RolesGuard },
-    RolesGuard,
   ],
-  exports: [RolesGuard, AuthRepository],
+  exports: [AuthRepository],
 })
 export class AuthModule {}
